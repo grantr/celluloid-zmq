@@ -33,6 +33,20 @@ module Celluloid
         end
       end
 
+      if ::ZMQ::LibZMQ.version3?
+        def disconnect(addr)
+          unless ::ZMQ::Util.resultcode_ok? @socket.disconnect addr
+            raise IOError, "error disconnecting from #{addr}: #{::ZMQ::Util.error_string}"
+          end
+        end
+
+        def unbind(addr)
+          unless ::ZMQ::Util.resultcode_ok? @socket.unbind(addr)
+            raise IOError, "couldn't unbind from #{addr}: #{::ZMQ::Util.error_string}"
+          end
+        end
+      end
+
       # Close the socket
       def close
         @socket.close
