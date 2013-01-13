@@ -25,6 +25,21 @@ module Celluloid
         end
       end
 
+      def identity=(value)
+        unless ::ZMQ::Util.resultcode_ok? @socket.setsockopt(::ZMQ::IDENTITY, value)
+          raise IOError, "couldn't set identity: #{::ZMQ::Util.error_string}"
+        end
+      end
+
+      def identity
+        result = []
+        rc = @socket.getsockopt(::ZMQ::IDENTITY, result)
+        unless ::ZMQ::Util.resultcode_ok? rc
+          raise IOError, "couldn't get identity: #{::ZMQ::Util.error_string}"
+        end
+        result.first
+      end
+
       # Bind to the given 0MQ address
       # Address should be in the form: tcp://1.2.3.4:5678/
       def bind(addr)
