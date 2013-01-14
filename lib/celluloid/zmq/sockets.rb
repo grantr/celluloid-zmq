@@ -116,6 +116,15 @@ module Celluloid
         buffer
       end
 
+      def read_multipart(buffer = [])
+        Celluloid.current_actor.wait_readable(@socket) if evented?
+
+        unless ::ZMQ::Util.resultcode_ok? @socket.recv_strings buffer
+          raise IOError, "error receiving ZMQ strings: #{::ZMQ::Util.error_string}"
+        end
+        buffer
+      end
+
       # Read a ZMQ::Message from the socket
       def read_message(message = ::ZMQ::Message.new)
         Celluloid.current_actor.wait_readable(@socket) if evented?
